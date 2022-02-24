@@ -1,5 +1,6 @@
 import React from 'react'
 import Caret from '../caret'
+import { getTextNode, omit } from '../../utils'
 
 const caret = <Caret />
 
@@ -7,38 +8,13 @@ type TextAnimeTypes = {
   speed?: number
   children: React.ReactNode
 }
-
-const getTextNode = (children: React.ReactNode) => {
-  let textNodes: string[] = []
-  React.Children.map(children, (child: React.ReactNode) => {
-    if (React.isValidElement(child)) {
-      React.Children.map(
-        child.props.children,
-        (innerChild: React.ReactNode) => {
-          textNodes = [...textNodes, ...getTextNode(innerChild)]
-        }
-      )
-    }
-    if (Array.isArray(child)) {
-      for (const text of child) {
-        textNodes = [...textNodes, text]
-      }
-    }
-    if (typeof child === 'string' || typeof child === 'number') {
-      textNodes = [...textNodes, child.toString()]
-    }
-  })
-  return textNodes
+type typeText = {
+  text: string
+  isDone: boolean
 }
-
-function omit(obj, keys) {
-  const { [keys]: _, ...newObj } = obj
-  return newObj
-}
-
 const hackChildrenInnerText = (
   children: React.ReactNode,
-  renderTextList: object[],
+  renderTextList: typeText[],
   lineIndex: number
 ): [any, number] => {
   if (lineIndex >= renderTextList.length) {
@@ -80,13 +56,12 @@ const hackChildrenInnerText = (
   if (Array.isArray(children)) {
     return [children.map(recurse), _lineIndex]
   }
-
   return [renderTextList[_lineIndex], _lineIndex + 1]
 }
 
 export default class TextAnime extends React.Component {
-  textNodes: string[]
   speed: number
+
   state = {
     renderTextList: [],
   }
@@ -95,7 +70,6 @@ export default class TextAnime extends React.Component {
     super(props)
     const { children, speed = 200 } = props
     this.speed = speed
-    this.textNodes = getTextNode(children)
     this.generateRenderText(getTextNode(children))
   }
 
@@ -105,13 +79,13 @@ export default class TextAnime extends React.Component {
     }
     let lineIndex = 0
     let wordCount = 1
-    let initState: object[] = []
+    const initState: object[] = []
     const timer = setInterval(() => {
       if (lineIndex >= textNodes.length) {
         clearInterval(timer)
         return
       }
-      let currentLine = textNodes[lineIndex]
+      const currentLine = textNodes[lineIndex]
       const typeCharacters = currentLine.substring(0, wordCount)
       initState[lineIndex] = { text: typeCharacters, isDone: false }
       this.setState({ renderTextList: initState })
@@ -126,16 +100,8 @@ export default class TextAnime extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        {
-          hackChildrenInnerText(
-            this.props.children,
-            this.state.renderTextList,
-            0
-          )[0]
-        }
-      </div>
-    )
+    const { children } = this.props
+    const { renderTextList } = this.state
+    return <div>{hackChildrenInnerText(children, renderTextList, 0)[0]}</div>
   }
 }

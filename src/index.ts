@@ -1,3 +1,3 @@
-import TextAnime from './components/text-anime'
+import TextAnime from './components/text-anime';
 
-export { TextAnime }
+export { TextAnime };
