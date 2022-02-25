@@ -1,8 +1,14 @@
 import React from 'react'
 
+let baseNumber = 1
+
 export const omit = (obj, keys) => {
   const { [keys]: _, ...newObj } = obj
   return newObj
+}
+
+export const generateUniqueId = (h) => {
+  return baseNumber++ + new Date().getTime() + h
 }
 
 export const getTextNode = (children: React.ReactNode) => {

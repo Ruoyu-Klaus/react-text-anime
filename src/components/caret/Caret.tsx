@@ -9,6 +9,7 @@ const caretAnimation = keyframes`
     opacity: 1;
   }
 `
+
 const StyledCaret = styled.span`
   animation: ${caretAnimation} 0.6s infinite ease;
   display: inline-block;
@@ -18,8 +19,10 @@ const StyledCaret = styled.span`
   margin-left: 5px;
 `
 
-function Caret() {
+const Caret: React.FC<CaretProps> = () => {
   return <StyledCaret>&#95;</StyledCaret>
 }
+
+interface CaretProps {}
 
 export default Caret

@@ -1,6 +1,7 @@
 import React from 'react'
 import Caret from '../caret'
-import { getTextNode, omit } from '../../utils'
+import Text from '../text'
+import { generateUniqueId, omit } from '../../utils'
 
 const caret = <Caret />
 
@@ -8,100 +9,78 @@ type TextAnimeTypes = {
   speed?: number
   children: React.ReactNode
 }
-type typeText = {
-  text: string
-  isDone: boolean
-}
-const hackChildrenInnerText = (
-  children: React.ReactNode,
-  renderTextList: typeText[],
-  lineIndex: number
-): [any, number] => {
-  if (lineIndex >= renderTextList.length) {
-    return [null, lineIndex]
-  }
-  let _lineIndex = lineIndex
-
-  const recurse = el => {
-    const [child, nextIndex] = hackChildrenInnerText(
-      el,
-      renderTextList,
-      _lineIndex
-    )
-    _lineIndex = nextIndex
-    if (child?.text) {
-      const _caret = React.cloneElement(caret, {
-        ...caret.props,
-        key: child.text,
-      })
-      return React.createElement(React.Fragment, {}, [
-        child.text,
-        child.isDone || _caret,
-      ])
-    }
-    return child
-  }
-
-  if (React.isValidElement(children)) {
-    const clonedChildren =
-      React.Children.map(children.props.children, recurse) || []
-    const tag = children.type
-    const props = {
-      ...omit(children.props, ['children']),
-      key: new Date().getUTCMilliseconds() + Math.random(),
-    }
-    const clonedElement = React.createElement(tag, props, [...clonedChildren])
-    return [clonedElement, _lineIndex]
-  }
-  if (Array.isArray(children)) {
-    return [children.map(recurse), _lineIndex]
-  }
-  return [renderTextList[_lineIndex], _lineIndex + 1]
-}
 
 export default class TextAnime extends React.Component {
+  static Text: object
   speed: number
 
   state = {
-    renderTextList: [],
+    renderTextList: []
   }
 
   constructor(props: TextAnimeTypes) {
     super(props)
-    const { children, speed = 200 } = props
+    const { speed = 200 } = props
     this.speed = speed
-    this.generateRenderText(getTextNode(children))
   }
 
-  generateRenderText = (textNodes: string[]) => {
-    if (!textNodes.length) {
-      return []
-    }
-    let lineIndex = 0
-    let wordCount = 1
-    const initState: object[] = []
+  componentDidMount(): void {
+    const allCharacters = document.querySelectorAll('.text-anime-character')
+    let index = 0
     const timer = setInterval(() => {
-      if (lineIndex >= textNodes.length) {
+      if (index >= allCharacters.length) {
         clearInterval(timer)
         return
       }
-      const currentLine = textNodes[lineIndex]
-      const typeCharacters = currentLine.substring(0, wordCount)
-      initState[lineIndex] = { text: typeCharacters, isDone: false }
-      this.setState({ renderTextList: initState })
-      wordCount++
-      if (wordCount > currentLine.length) {
-        initState[lineIndex] = { text: typeCharacters, isDone: true }
-        this.setState({ renderTextList: initState })
-        lineIndex++
-        wordCount = 1
+      allCharacters[index].setAttribute('style', `{visibility: 'visible'}`)
+      index++
+    }, 200)
+  }
+
+  injectAnimation = (children: React.ReactNode) => {
+    return React.Children.map(children, (child: React.ReactNode) => {
+      if (React.isValidElement(child)) {
+        if (child.type === TextAnime.Text) {
+          const props = child.props
+          const splitWords = props.children.split('').map((char) =>
+            React.createElement('span', {
+              key: generateUniqueId(0),
+              id: generateUniqueId(0),
+              className: 'text-anime-character',
+              style: { color: 'blue', visibility: 'hidden' },
+              children: char
+            })
+          )
+          return React.cloneElement(
+            child,
+            { ...props, style: { color: 'red' } },
+            splitWords
+          )
+        } else {
+          const tag = child.type
+          const props = {
+            ...omit(child.props, ['children']),
+            id: generateUniqueId(0),
+            key: generateUniqueId(0)
+          }
+          const clonedElement = React.Children.map(
+            child.props.children,
+            (innerChild: React.ReactNode) => {
+              return this.injectAnimation(innerChild)
+            }
+          )
+          return React.createElement(tag, props, [...clonedElement])
+        }
+      } else {
+        return child
       }
-    }, this.speed)
+    })
   }
 
   render() {
     const { children } = this.props
-    const { renderTextList } = this.state
-    return <div>{hackChildrenInnerText(children, renderTextList, 0)[0]}</div>
+    return <div className={'TextAnime'}>{this.injectAnimation(children)}</div>
   }
 }
+
+TextAnime.Text = Text
