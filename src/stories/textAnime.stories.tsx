@@ -1,6 +1,5 @@
 import React from 'react'
 import TextAnime from '../components/text-anime/index'
-import Text from '../components/text/index'
 
 export default {
   title: 'TextAnime'
@@ -17,11 +16,11 @@ export const TextAnimeExample = () => {
   return (
     <>
       <TextAnime>
-        <Text>Hello world</Text>
-        <Text>
+        <TextAnime.Text as='h2'>Hello world</TextAnime.Text>
+        <TextAnime.Text>
           I can typify all text node by wrapping them as a react children
           component.
-        </Text>
+        </TextAnime.Text>
         <ul>
           {textList.map((text) => (
             <li key={text}>{text}</li>

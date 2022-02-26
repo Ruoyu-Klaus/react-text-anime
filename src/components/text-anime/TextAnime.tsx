@@ -10,8 +10,7 @@ type TextAnimeTypes = {
   children: React.ReactNode
 }
 
-export default class TextAnime extends React.Component {
-  static Text: object
+class TextAnime extends React.Component {
   speed: number
 
   state = {
@@ -86,4 +85,4 @@ export default class TextAnime extends React.Component {
   }
 }
 
-TextAnime.Text = Text
+export default Object.assign(TextAnime, { Text })

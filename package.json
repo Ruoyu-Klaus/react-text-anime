@@ -1,6 +1,6 @@
 {
   "name": "react-text-anime",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -22,6 +22,9 @@
     "url": "https://github.com/Ruoyu-Klaus/react-text-anime/issues"
   },
   "homepage": "https://github.com/Ruoyu-Klaus/react-text-anime#readme",
+  "dependencies": {
+    "react-spring": "^9.4.3"
+  },
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@rollup/plugin-commonjs": "^21.0.1",
@@ -50,8 +53,5 @@
     "styled-components": "^5.3.3",
     "ts-jest": "^27.1.3",
     "typescript": "^4.5.5"
-  },
-  "dependencies": {
-    "react-spring": "^9.4.3"
   }
 }
