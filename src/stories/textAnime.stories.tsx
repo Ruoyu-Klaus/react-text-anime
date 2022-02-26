@@ -15,15 +15,19 @@ const textList = [
 export const TextAnimeExample = () => {
   return (
     <>
-      <TextAnime>
+      <TextAnime speed={200}>
         <TextAnime.Text as='h2'>Hello world</TextAnime.Text>
         <TextAnime.Text>
-          I can typify all text node by wrapping them as a react children
-          component.
+          I can typify all text node under the TextAnime.Text
         </TextAnime.Text>
+        <button style={{ width: 80, height: 35 }}>
+          <TextAnime.Text as='span'>Button</TextAnime.Text>
+        </button>
         <ul>
           {textList.map((text) => (
-            <li key={text}>{text}</li>
+            <TextAnime.Text as='li' key={text}>
+              {text}
+            </TextAnime.Text>
           ))}
         </ul>
       </TextAnime>

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 
 type TextTypes = {
   as?: React.ElementType
-  children?: string
+  children?: React.ReactNode
   className?: string
   style?: React.CSSProperties
 }

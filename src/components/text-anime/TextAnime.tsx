@@ -1,16 +1,17 @@
 import React from 'react'
 import Caret from '../caret'
 import Text from '../text'
-import { generateUniqueId, omit } from '../../utils'
+import { generateUniqueId, isAnimeTextElement, omit } from '../../utils'
 
 const caret = <Caret />
 
 type TextAnimeTypes = {
   speed?: number
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
-class TextAnime extends React.Component {
+class TextAnime extends React.Component<TextAnimeTypes> {
+  static Text: typeof Text
   speed: number
 
   state = {
@@ -24,58 +25,81 @@ class TextAnime extends React.Component {
   }
 
   componentDidMount(): void {
-    const allCharacters = document.querySelectorAll('.text-anime-character')
-    let index = 0
-    const timer = setInterval(() => {
-      if (index >= allCharacters.length) {
-        clearInterval(timer)
-        return
-      }
-      allCharacters[index].setAttribute('style', `{visibility: 'visible'}`)
-      if (index - 1 >= 0) {
-        allCharacters[index - 1].querySelector('span').style.display = 'none'
-      }
-      index++
-    }, 200)
+    this.startTyping()
   }
 
   injectAnimation = (children: React.ReactNode) => {
+    const recurse = (element) => {
+      if (typeof element === 'string' || typeof element === 'number') {
+        return this.textSeparator(element).map((characterNode) => {
+          const id = generateUniqueId(0)
+          const caretNode = React.createElement(
+            React.Fragment,
+            { key: id },
+            caret
+          )
+          return React.createElement('span', {
+            key: id,
+            id: id,
+            className: 'text-anime-character',
+            style: { display: 'none' },
+            children: [characterNode, caretNode]
+          })
+        })
+      }
+      return this.injectAnimation(element)
+    }
     return React.Children.map(children, (child: React.ReactNode) => {
       if (React.isValidElement(child)) {
-        if (child.type === TextAnime.Text) {
+        if (isAnimeTextElement(child)) {
           const props = child.props
-          const splitWords = props.children.split('').map((char) =>
-            React.createElement('span', {
-              key: generateUniqueId(0),
-              id: generateUniqueId(0),
-              className: 'text-anime-character',
-              style: { color: 'blue', visibility: 'hidden' },
-              children: [char, caret]
-            })
-          )
-          return React.cloneElement(
-            child,
-            { ...props, style: { color: 'red' } },
-            splitWords
-          )
+          const clonedElement = React.Children.map(props.children, recurse)
+          return React.createElement(child.type, props, [...clonedElement])
         } else {
-          const tag = child.type
-          const props = {
-            ...omit(child.props, ['children']),
-            id: generateUniqueId(0),
-            key: generateUniqueId(0)
-          }
+          const id = generateUniqueId(0)
           const clonedElement = React.Children.map(
             child.props.children,
             (innerChild: React.ReactNode) => {
               return this.injectAnimation(innerChild)
             }
           )
-          return React.createElement(tag, props, [...clonedElement])
+          return React.createElement(
+            child.type,
+            {
+              ...omit(child.props, ['children']),
+              id,
+              key: id
+            },
+            [...clonedElement]
+          )
         }
-      } else {
-        return child
       }
+      return child
+    })
+  }
+
+  private startTyping() {
+    const allCharacters = document.querySelectorAll<HTMLSpanElement>(
+      '.text-anime-character'
+    )
+    let index = 0
+    const timer = setInterval(() => {
+      if (index >= allCharacters.length) {
+        clearInterval(timer)
+        return
+      }
+      allCharacters[index].style.display = 'initial'
+      if (index - 1 >= 0) {
+        allCharacters[index - 1].querySelector('span').style.display = 'none'
+      }
+      index++
+    }, this.speed)
+  }
+
+  private textSeparator = (text) => {
+    return text.split('').map((char) => {
+      const id = generateUniqueId(1)
+      return React.createElement(React.Fragment, { key: id }, char)
     })
   }
 
@@ -84,5 +108,6 @@ class TextAnime extends React.Component {
     return <div className={'TextAnime'}>{this.injectAnimation(children)}</div>
   }
 }
+TextAnime.Text = Text
 
-export default Object.assign(TextAnime, { Text })
+export default TextAnime

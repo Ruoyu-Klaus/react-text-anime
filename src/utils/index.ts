@@ -1,5 +1,5 @@
-import React from 'react'
-
+import { ReactElement, ReactNode } from 'react'
+import Text from '../components/text/'
 let baseNumber = 1
 
 export const omit = (obj, keys) => {
@@ -11,25 +11,18 @@ export const generateUniqueId = (h) => {
   return baseNumber++ + new Date().getTime() + h
 }
 
-export const getTextNode = (children: React.ReactNode) => {
-  let textNodes: string[] = []
-  React.Children.map(children, (child: React.ReactNode) => {
-    if (React.isValidElement(child)) {
-      React.Children.map(
-        child.props.children,
-        (innerChild: React.ReactNode) => {
-          textNodes = [...textNodes, ...getTextNode(innerChild)]
-        }
-      )
-    }
-    if (Array.isArray(child)) {
-      for (const text of child) {
-        textNodes = [...textNodes, text]
-      }
-    }
-    if (typeof child === 'string' || typeof child === 'number') {
-      textNodes = [...textNodes, child.toString()]
-    }
-  })
-  return textNodes
+export const isElement = (
+  element: ReactElement,
+  targetElement: ReactNode,
+  targetElementName: string
+) => {
+  const elementType = element && element.type
+  if (!elementType) {
+    return false
+  }
+  return elementType === targetElement || elementType === targetElementName
+}
+
+export const isAnimeTextElement = (element: ReactElement) => {
+  return isElement(element, Text, 'Text')
 }
