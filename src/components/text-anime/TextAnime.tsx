@@ -33,6 +33,9 @@ export default class TextAnime extends React.Component {
         return
       }
       allCharacters[index].setAttribute('style', `{visibility: 'visible'}`)
+      if (index - 1 >= 0) {
+        allCharacters[index - 1].querySelector('span').style.display = 'none'
+      }
       index++
     }, 200)
   }
@@ -48,7 +51,7 @@ export default class TextAnime extends React.Component {
               id: generateUniqueId(0),
               className: 'text-anime-character',
               style: { color: 'blue', visibility: 'hidden' },
-              children: char
+              children: [char, caret]
             })
           )
           return React.cloneElement(

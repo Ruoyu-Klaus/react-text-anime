@@ -15,7 +15,6 @@ const StyledCaret = styled.span`
   display: inline-block;
   position: relative;
   top: -0.14em;
-  left: 5px;
   margin-left: 5px;
 `
 
