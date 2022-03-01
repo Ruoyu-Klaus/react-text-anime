@@ -50,7 +50,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
             key: id,
             id: id,
             className: 'text-anime-character',
-            style: { display: 'none' },
+            style: { visibility: 'hidden' },
             children: [characterNode, caretNode]
           })
         })
@@ -67,7 +67,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
           return React.createElement('span', {
             id: child.props.time,
             className: `text-anime-character delayed`,
-            style: { display: 'none' }
+            style: { visibility: 'hidden' }
           })
         } else {
           const id = generateUniqueId(0)
@@ -105,7 +105,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
         base++
         continue
       }
-      character.style.display = 'initial'
+      character.style.visibility = 'visible'
       if (index - base >= 0) {
         allCharacters[index - base].querySelector('span').style.display = 'none'
         base > 1 && base--
