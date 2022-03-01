@@ -1,7 +1,14 @@
 import React from 'react'
 import Caret from '../caret'
 import Text from '../text'
-import { generateUniqueId, isAnimeTextElement, omit } from '../../utils'
+import Delay from '../delay'
+import {
+  delay,
+  generateUniqueId,
+  isAnimeTextElement,
+  isDelayElement,
+  omit
+} from '../../utils'
 
 const caret = <Caret />
 
@@ -12,6 +19,7 @@ type TextAnimeTypes = {
 
 class TextAnime extends React.Component<TextAnimeTypes> {
   static Text: typeof Text
+  static Delay: typeof Delay
   speed: number
 
   state = {
@@ -55,6 +63,12 @@ class TextAnime extends React.Component<TextAnimeTypes> {
           const props = child.props
           const clonedElement = React.Children.map(props.children, recurse)
           return React.createElement(child.type, props, [...clonedElement])
+        } else if (isDelayElement(child)) {
+          return React.createElement('span', {
+            id: child.props.time,
+            className: `text-anime-character delayed`,
+            style: { display: 'none' }
+          })
         } else {
           const id = generateUniqueId(0)
           const clonedElement = React.Children.map(
@@ -78,22 +92,25 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     })
   }
 
-  private startTyping() {
+  private async startTyping() {
     const allCharacters = document.querySelectorAll<HTMLSpanElement>(
       '.text-anime-character'
     )
-    let index = 0
-    const timer = setInterval(() => {
-      if (index >= allCharacters.length) {
-        clearInterval(timer)
-        return
+    let base = 1
+    for (let index = 0; index < allCharacters.length; index++) {
+      await delay(this.speed)
+      const character = allCharacters[index]
+      if (character.classList.contains('delayed')) {
+        await delay(Number(character.getAttribute('id')))
+        base++
+        continue
       }
-      allCharacters[index].style.display = 'initial'
-      if (index - 1 >= 0) {
-        allCharacters[index - 1].querySelector('span').style.display = 'none'
+      character.style.display = 'initial'
+      if (index - base >= 0) {
+        allCharacters[index - base].querySelector('span').style.display = 'none'
+        base > 1 && base--
       }
-      index++
-    }, this.speed)
+    }
   }
 
   private textSeparator = (text) => {
@@ -109,5 +126,6 @@ class TextAnime extends React.Component<TextAnimeTypes> {
   }
 }
 TextAnime.Text = Text
+TextAnime.Delay = Delay
 
 export default TextAnime

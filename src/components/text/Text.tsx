@@ -8,7 +8,7 @@ type TextTypes = {
 }
 
 export default class Text extends PureComponent<TextTypes> {
-  TextElement
+  private TextElement: React.ElementType
   constructor(props: TextTypes) {
     super(props)
     this.TextElement = props.as || 'p'

@@ -17,12 +17,13 @@ export const TextAnimeExample = () => {
     <>
       <TextAnime speed={200}>
         <TextAnime.Text as='h2'>Hello world</TextAnime.Text>
+        <TextAnime.Delay time={1000} />
+        <TextAnime.Text>
+          Delay <TextAnime.Delay time={1000} /> one second passed
+        </TextAnime.Text>
         <TextAnime.Text>
           I can typify all text node under the TextAnime.Text
         </TextAnime.Text>
-        <button style={{ width: 80, height: 35 }}>
-          <TextAnime.Text as='span'>Button</TextAnime.Text>
-        </button>
         <ul>
           {textList.map((text) => (
             <TextAnime.Text as='li' key={text}>
