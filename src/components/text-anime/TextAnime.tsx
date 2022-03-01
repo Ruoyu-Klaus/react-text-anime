@@ -122,7 +122,11 @@ class TextAnime extends React.Component<TextAnimeTypes> {
 
   render() {
     const { children } = this.props
-    return <div className={'TextAnime'}>{this.injectAnimation(children)}</div>
+    return (
+      <div className='TextAnime' aria-label='TextAnime'>
+        {this.injectAnimation(children)}
+      </div>
+    )
   }
 }
 TextAnime.Text = Text
