@@ -11,7 +11,7 @@ import {
 } from '../../utils'
 
 type TextAnimeTypes = {
-  speed?: number
+  typingSpeed?: number
   children?: React.ReactNode
   caretClassName?: string
   caretMark?: React.ReactNode
@@ -21,16 +21,13 @@ class TextAnime extends React.Component<TextAnimeTypes> {
   static Text: typeof Text
   static Delay: typeof Delay
   caret: React.ReactElement
-  speed: number
-
-  state = {
-    renderTextList: []
-  }
+  styledSpan: React.ReactElement
+  typingSpeed: number
 
   constructor(props: TextAnimeTypes) {
     super(props)
-    const { speed = 200, caretClassName, caretMark, caretStyle } = props
-    this.speed = speed
+    const { typingSpeed = 200, caretClassName, caretMark, caretStyle } = props
+    this.typingSpeed = typingSpeed
     this.caret = (
       <Caret className={caretClassName} style={caretStyle}>
         {caretMark}
@@ -42,7 +39,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     this.startTyping()
   }
 
-  injectAnimation = (children: React.ReactNode) => {
+  injectAttributes = (children: React.ReactNode) => {
     const recurse = (element) => {
       if (typeof element === 'string' || typeof element === 'number') {
         return this.textSeparator(element).map((characterNode) => {
@@ -57,14 +54,14 @@ class TextAnime extends React.Component<TextAnimeTypes> {
             id: id,
             className: 'text-anime-character',
             style: {
-              visibility: 'hidden',
-              whiteSpace: 'pre-wrap'
+              whiteSpace: 'pre-wrap',
+              visibility: 'hidden'
             },
             children: [characterNode, caretNode]
           })
         })
       }
-      return this.injectAnimation(element)
+      return this.injectAttributes(element)
     }
     return React.Children.map(children, (child: React.ReactNode) => {
       if (React.isValidElement(child)) {
@@ -83,7 +80,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
           const clonedElement = React.Children.map(
             child.props.children,
             (innerChild: React.ReactNode) => {
-              return this.injectAnimation(innerChild)
+              return this.injectAttributes(innerChild)
             }
           )
           return React.createElement(
@@ -107,7 +104,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     )
     let base = 1
     for (let index = 0; index < allCharacters.length; index++) {
-      await delay(this.speed)
+      await delay(this.typingSpeed)
       const character = allCharacters[index]
       if (character.classList.contains('delayed')) {
         await delay(Number(character.getAttribute('id')))
@@ -115,9 +112,9 @@ class TextAnime extends React.Component<TextAnimeTypes> {
         continue
       }
       character.style.visibility = 'visible'
+      // remove last caret
       if (index - base >= 0) {
-        allCharacters[index - base].querySelector('span').remove()
-        // allCharacters[index - base].querySelector('span').remove()
+        allCharacters[index - base].querySelector('.text-anime-caret').remove()
         base > 1 && base--
       }
     }
@@ -134,7 +131,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     const { children } = this.props
     return (
       <div className='TextAnime' aria-label='TextAnime'>
-        {this.injectAnimation(children)}
+        {this.injectAttributes(children)}
       </div>
     )
   }

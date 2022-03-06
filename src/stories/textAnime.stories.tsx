@@ -16,7 +16,7 @@ export const CustomCaret = () => {
   return (
     <>
       <TextAnime
-        speed={100}
+        typingSpeed={100}
         caretMark={' '}
         caretStyle={{
           color: 'red',
@@ -29,7 +29,7 @@ export const CustomCaret = () => {
         </TextAnime.Text>
       </TextAnime>
       <TextAnime
-        speed={100}
+        typingSpeed={100}
         caretMark={'❓'}
         caretStyle={{
           color: 'red'
@@ -46,7 +46,7 @@ export const CustomCaret = () => {
 export const TextAnimeExample = () => {
   return (
     <>
-      <TextAnime speed={100}>
+      <TextAnime typingSpeed={100}>
         <TextAnime.Text>
           Delay <TextAnime.Delay time={1000} /> one second passed
         </TextAnime.Text>

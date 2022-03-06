@@ -25,7 +25,11 @@ const Caret: React.FC<CaretTypes> = ({ className, style, children }) => {
     margin-left: 5px;
     ${{ ...style }}
   `
-  return <StyledCaret className={className}>{children || '_'}</StyledCaret>
+  return (
+    <StyledCaret className={'text-anime-caret ' + className}>
+      {children || '_'}
+    </StyledCaret>
+  )
 }
 
 export default Caret
