@@ -12,12 +12,41 @@ const textList = [
   'Easy to use'
 ]
 
+export const CustomCaret = () => {
+  return (
+    <>
+      <TextAnime
+        speed={100}
+        caretMark={' '}
+        caretStyle={{
+          color: 'red',
+          borderLeft: '1px solid red',
+          animationDuration: '1s'
+        }}
+      >
+        <TextAnime.Text as='h2' style={{ color: 'red' }}>
+          Hello world
+        </TextAnime.Text>
+      </TextAnime>
+      <TextAnime
+        speed={100}
+        caretMark={'❓'}
+        caretStyle={{
+          color: 'red'
+        }}
+      >
+        <TextAnime.Text as='h3' style={{ color: 'black' }}>
+          Hello world
+        </TextAnime.Text>
+      </TextAnime>
+    </>
+  )
+}
+
 export const TextAnimeExample = () => {
   return (
     <>
-      <TextAnime speed={200}>
-        <TextAnime.Text as='h2'>Hello world</TextAnime.Text>
-        <TextAnime.Delay time={1000} />
+      <TextAnime speed={100}>
         <TextAnime.Text>
           Delay <TextAnime.Delay time={1000} /> one second passed
         </TextAnime.Text>

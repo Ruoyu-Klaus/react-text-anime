@@ -10,16 +10,17 @@ import {
   omit
 } from '../../utils'
 
-const caret = <Caret />
-
 type TextAnimeTypes = {
   speed?: number
   children?: React.ReactNode
+  caretClassName?: string
+  caretMark?: React.ReactNode
+  caretStyle?: React.CSSProperties
 }
-
 class TextAnime extends React.Component<TextAnimeTypes> {
   static Text: typeof Text
   static Delay: typeof Delay
+  caret: React.ReactElement
   speed: number
 
   state = {
@@ -28,8 +29,13 @@ class TextAnime extends React.Component<TextAnimeTypes> {
 
   constructor(props: TextAnimeTypes) {
     super(props)
-    const { speed = 200 } = props
+    const { speed = 200, caretClassName, caretMark, caretStyle } = props
     this.speed = speed
+    this.caret = (
+      <Caret className={caretClassName} style={caretStyle}>
+        {caretMark}
+      </Caret>
+    )
   }
 
   componentDidMount(): void {
@@ -44,13 +50,16 @@ class TextAnime extends React.Component<TextAnimeTypes> {
           const caretNode = React.createElement(
             React.Fragment,
             { key: id },
-            caret
+            this.caret
           )
           return React.createElement('span', {
             key: id,
             id: id,
             className: 'text-anime-character',
-            style: { visibility: 'hidden' },
+            style: {
+              visibility: 'hidden',
+              whiteSpace: 'pre-wrap'
+            },
             children: [characterNode, caretNode]
           })
         })
@@ -107,7 +116,8 @@ class TextAnime extends React.Component<TextAnimeTypes> {
       }
       character.style.visibility = 'visible'
       if (index - base >= 0) {
-        allCharacters[index - base].querySelector('span').style.display = 'none'
+        allCharacters[index - base].querySelector('span').remove()
+        // allCharacters[index - base].querySelector('span').remove()
         base > 1 && base--
       }
     }
