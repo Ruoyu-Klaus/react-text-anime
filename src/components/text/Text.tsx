@@ -5,6 +5,7 @@ type TextTypes = {
   children?: React.ReactNode
   className?: string
   style?: React.CSSProperties
+  backspace?: boolean
 }
 
 export default class Text extends PureComponent<TextTypes> {
@@ -15,7 +16,7 @@ export default class Text extends PureComponent<TextTypes> {
   }
 
   render() {
-    const { children, ...rest } = this.props
+    const { children, backspace, ...rest } = this.props
     const TextElement = this.TextElement
     return <TextElement {...rest}>{children}</TextElement>
   }

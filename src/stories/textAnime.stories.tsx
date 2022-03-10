@@ -48,18 +48,37 @@ export const TextAnimeExample = () => {
     <>
       <TextAnime typingSpeed={100}>
         <TextAnime.Text>
-          Delay <TextAnime.Delay time={1000} /> one second passed
+          <TextAnime.Delay time={2000} />
+          Delay one second passed
         </TextAnime.Text>
         <TextAnime.Text>
-          I can typify all text node under the TextAnime.Text
+          I <TextAnime.Delay time={1000} />
+          can typify all text node under the TextAnime.Text
         </TextAnime.Text>
         <ul>
           {textList.map((text) => (
             <TextAnime.Text as='li' key={text}>
+              <TextAnime.Delay time={1000} />
               {text}
             </TextAnime.Text>
           ))}
         </ul>
+      </TextAnime>
+    </>
+  )
+}
+
+export const BackspaceExample = () => {
+  return (
+    <>
+      <TextAnime typingSpeed={400}>
+        <TextAnime.Text>
+          I{' '}
+          <TextAnime.Text as={'span'} backspace={true}>
+            one
+          </TextAnime.Text>
+          <TextAnime.Text as={'span'}> node</TextAnime.Text>
+        </TextAnime.Text>
       </TextAnime>
     </>
   )
