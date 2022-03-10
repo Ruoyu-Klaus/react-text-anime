@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import Caret from '../caret'
 import Text from '../text'
 import Delay from '../delay'
@@ -9,6 +9,7 @@ import {
   isAnimeTextElement,
   isBackspaceElement,
   isDelayElement,
+  isStringOrNumber,
   omit
 } from '../../utils'
 
@@ -42,49 +43,20 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     this.startTyping()
   }
 
-  injectAttributes = (children: React.ReactNode) => {
-    const recurse = (props, element) => {
-      if (typeof element === 'string' || typeof element === 'number') {
-        return this.textSeparator(element).map(
-          (characterNode, index, array) => {
-            const isLastCharacter = index === array.length - 1
-            const id = generateUniqueId(0)
-            const caretNode = React.createElement(
-              React.Fragment,
-              { key: id },
-              this.caret
-            )
-            return React.createElement('span', {
-              key: id,
-              id: id,
-              className: `text-anime-character ${
-                props.backspace && 'backspace'
-              } ${props.backspace && isLastCharacter ? 'backspace-last' : ''}`,
-              style: {
-                whiteSpace: 'pre-wrap',
-                visibility: 'hidden'
-              },
-              index: index,
-              children: [characterNode, caretNode]
-            })
-          }
-        )
-      }
-      return this.injectAttributes(element)
-    }
+  private hijackChildren = (children: React.ReactNode) => {
     return React.Children.map(children, (child: React.ReactNode) => {
       if (React.isValidElement(child)) {
-        const childKey = generateUniqueId(0)
+        const uniqueKey = generateUniqueId(0)
         const caretNode = React.createElement(
           React.Fragment,
-          { key: childKey },
+          { key: uniqueKey },
           this.caret
         )
         if (isAnimeTextElement(child)) {
           const props = child.props
           const clonedElement = React.Children.map(
             props.children,
-            recurse.bind(null, props)
+            this.recurseInterceptTextNode.bind(null, props, this.hijackChildren)
           )
           return React.createElement(child.type, props, [...clonedElement])
         } else if (isDelayElement(child)) {
@@ -105,15 +77,15 @@ class TextAnime extends React.Component<TextAnimeTypes> {
           const clonedElement = React.Children.map(
             child.props.children,
             (innerChild: React.ReactNode) => {
-              return this.injectAttributes(innerChild)
+              return this.hijackChildren(innerChild)
             }
           )
           return React.createElement(
             child.type,
             {
               ...omit(child.props, ['children']),
-              id: childKey,
-              key: childKey
+              id: uniqueKey,
+              key: uniqueKey
             },
             [...clonedElement]
           )
@@ -123,59 +95,85 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     })
   }
 
+  private recurseInterceptTextNode = (
+    props: { backspace: boolean },
+    recursionFunc: Function,
+    element: ReactNode
+  ) => {
+    if (isStringOrNumber(element)) {
+      return this.textSeparator(element.toString()).map(
+        (characterNode, index, array) => {
+          const isLastCharacter = index === array.length - 1
+          const id = generateUniqueId(0)
+          const caretNode = React.createElement(
+            React.Fragment,
+            { key: generateUniqueId(0) },
+            this.caret
+          )
+          return React.createElement('span', {
+            key: id,
+            id: id,
+            className: `text-anime-character ${
+              props.backspace && 'backspace'
+            } ${props.backspace && isLastCharacter ? 'backspace-last' : ''}`,
+            style: {
+              whiteSpace: 'pre-wrap',
+              visibility: 'hidden'
+            },
+            index: index,
+            children: [characterNode, caretNode]
+          })
+        }
+      )
+    }
+    return recursionFunc(element)
+  }
+
   private async startTyping() {
     const allCharacters = document.querySelectorAll<HTMLSpanElement>(
       '.text-anime-character'
     )
-    let backspaceStartIndex: number = null
-    let backspaceEndIndex: number = null
+    const toggleCaretByIndex = (index: number, show: boolean) => {
+      const caret: HTMLSpanElement =
+        allCharacters[index].querySelector('.text-anime-caret')
+      caret.style.display = show ? 'inline-block' : 'none'
+    }
 
     for (let index = 0; index < allCharacters.length; index++) {
       await delay(this.typingSpeed)
       const character = allCharacters[index]
-      if (character.classList.contains('delayed')) {
-        await delay(Number(character.getAttribute('id')))
-      }
+      const shouldDelay = character.classList.contains('delayed')
+      const isLastBackspaceCharacter =
+        character.classList.contains('backspace-last')
 
-      // remove last caret
-      if (index - 1 >= 0) {
-        const caret: HTMLSpanElement =
-          allCharacters[index - 1].querySelector('.text-anime-caret')
-        caret.style.display = 'none'
+      if (shouldDelay) {
+        await delay(Number(character.getAttribute('id')))
       }
       character.style.visibility = 'visible'
 
-      if (character.classList.contains('backspace-last')) {
-        const count = Number(character.getAttribute('index'))
-        for (
-          let backspaceIndex = 0;
-          backspaceIndex <= count;
-          backspaceIndex++
-        ) {
+      const previousIndex = index - 1
+      if (previousIndex >= 0) {
+        toggleCaretByIndex(previousIndex, false)
+      }
+
+      if (isLastBackspaceCharacter) {
+        const numberForBackspace = Number(character.getAttribute('index'))
+        for (let stepIndex = 0; stepIndex <= numberForBackspace; stepIndex++) {
           await delay(this.typingSpeed)
-          const character = allCharacters[index - backspaceIndex]
-          const lastOneIndex = index - backspaceIndex - 1
+          const currentIndex = index - stepIndex
+          const character = allCharacters[currentIndex]
           character.style.display = 'none'
 
-          if (lastOneIndex >= 0) {
-            const lastCharacter = allCharacters[lastOneIndex]
-            const caret: HTMLSpanElement =
-              lastCharacter.querySelector('.text-anime-caret')
-            caret.style.display = 'inline-block'
-          }
-          if (index < allCharacters.length - 1) {
-            const caret: HTMLSpanElement =
-              allCharacters[index - count - 1].querySelector(
-                '.text-anime-caret'
-              )
-            caret.style.display = 'none'
+          const previousIndex = currentIndex - 1
+          if (previousIndex >= 0) {
+            toggleCaretByIndex(previousIndex, false)
           }
         }
       }
     }
   }
 
-  private textSeparator = (text) => {
+  private textSeparator = (text: string) => {
     return text.split('').map((char) => {
       const id = generateUniqueId(1)
       return React.createElement(React.Fragment, { key: id }, char)
@@ -186,7 +184,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     const { children } = this.props
     return (
       <div className='TextAnime' aria-label='TextAnime'>
-        {this.injectAttributes(children)}
+        {this.hijackChildren(children)}
       </div>
     )
   }

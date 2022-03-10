@@ -71,9 +71,9 @@ export const TextAnimeExample = () => {
 export const BackspaceExample = () => {
   return (
     <>
-      <TextAnime typingSpeed={400}>
+      <TextAnime typingSpeed={200}>
         <TextAnime.Text>
-          I{' '}
+          I am a{' '}
           <TextAnime.Text as={'span'} backspace={true}>
             one
           </TextAnime.Text>

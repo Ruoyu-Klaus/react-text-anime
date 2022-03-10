@@ -17,6 +17,10 @@ export const delay = async (timeout: number) => {
   return await new Promise((resolve) => setTimeout(resolve, timeout))
 }
 
+export const isStringOrNumber = (value: any) => {
+  return typeof value === 'string' || typeof value === 'number'
+}
+
 export const isElement = (
   element: ReactElement,
   targetElement: ReactNode,
