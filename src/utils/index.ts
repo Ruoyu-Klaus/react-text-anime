@@ -1,7 +1,6 @@
 import { ReactElement, ReactNode } from 'react'
 import Text from '../components/text/'
 import Delay from '../components/delay'
-import Backspace from '../components/backspace'
 let baseNumber = 1
 
 export const omit = (obj, keys) => {
@@ -39,8 +38,4 @@ export const isAnimeTextElement = (element: ReactElement) => {
 
 export const isDelayElement = (element: ReactElement) => {
   return isElement(element, Delay, 'Delay')
-}
-
-export const isBackspaceElement = (element: ReactElement) => {
-  return isElement(element, Backspace, 'Backspace')
 }

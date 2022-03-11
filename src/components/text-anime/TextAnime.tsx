@@ -2,12 +2,10 @@ import React, { ReactNode } from 'react'
 import Caret from '../caret'
 import Text from '../text'
 import Delay from '../delay'
-import Backspace from '../backspace'
 import {
   delay,
   generateUniqueId,
   isAnimeTextElement,
-  isBackspaceElement,
   isDelayElement,
   isStringOrNumber,
   omit
@@ -23,7 +21,6 @@ type TextAnimeTypes = {
 class TextAnime extends React.Component<TextAnimeTypes> {
   static Text: typeof Text
   static Delay: typeof Delay
-  static Backspace: typeof Backspace
   caret: React.ReactElement
   styledSpan: React.ReactElement
   typingSpeed: number
@@ -63,13 +60,6 @@ class TextAnime extends React.Component<TextAnimeTypes> {
           return React.createElement('span', {
             id: child.props.time,
             className: `text-anime-character delayed`,
-            style: { visibility: 'hidden' },
-            children: [caretNode]
-          })
-        } else if (isBackspaceElement(child)) {
-          return React.createElement('span', {
-            id: child.props.count,
-            className: `text-anime-character backspace`,
             style: { visibility: 'hidden' },
             children: [caretNode]
           })
@@ -191,6 +181,5 @@ class TextAnime extends React.Component<TextAnimeTypes> {
 }
 TextAnime.Text = Text
 TextAnime.Delay = Delay
-TextAnime.Backspace = Backspace
 
 export default TextAnime
