@@ -15,18 +15,18 @@ const caretAnimation = keyframes`
     opacity: 1;
   }
 `
+const StyledCaret = styled.span`
+  animation: ${caretAnimation} 0.6s infinite ease;
+  display: inline-block;
+  height: auto;
+  position: relative;
+  margin-left: 5px;
+  ${(props) => ({ ...props.style })}
+`
 
 const Caret: React.FC<CaretTypes> = ({ className, style, children }) => {
-  const StyledCaret = styled.span`
-    animation: ${caretAnimation} 0.6s infinite ease;
-    display: inline-block;
-    height: auto;
-    position: relative;
-    margin-left: 5px;
-    ${{ ...style }}
-  `
   return (
-    <StyledCaret className={'text-anime-caret ' + className}>
+    <StyledCaret className={'text-anime-caret ' + className} style={style}>
       {children || '_'}
     </StyledCaret>
   )
