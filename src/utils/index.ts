@@ -8,7 +8,7 @@ export const omit = (obj, keys) => {
   return newObj
 }
 
-export const generateUniqueId = (h) => {
+export const generateUniqueId = (h: number) => {
   return baseNumber++ + new Date().getTime() + h
 }
 

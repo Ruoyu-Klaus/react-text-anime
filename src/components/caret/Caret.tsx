@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import styled, { keyframes } from 'styled-components'
 
 type CaretTypes = {
@@ -24,12 +24,17 @@ const StyledCaret = styled.span`
   ${(props) => ({ ...props.style })}
 `
 
-const Caret: React.FC<CaretTypes> = ({ className, style, children }) => {
-  return (
-    <StyledCaret className={'text-anime-caret ' + className} style={style}>
-      {children || '_'}
-    </StyledCaret>
-  )
-}
+export default class Caret extends PureComponent<CaretTypes> {
+  constructor(props: CaretTypes | Readonly<CaretTypes>) {
+    super(props)
+  }
 
-export default Caret
+  render() {
+    const { className, style, children } = this.props
+    return (
+      <StyledCaret className={'text-anime-caret ' + className} style={style}>
+        {children || '_'}
+      </StyledCaret>
+    )
+  }
+}

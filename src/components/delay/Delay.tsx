@@ -5,7 +5,7 @@ type DelayType = {
 }
 
 export default class Delay extends PureComponent<DelayType> {
-  constructor(props) {
+  constructor(props: DelayType | Readonly<DelayType>) {
     super(props)
   }
 
