@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react'
+import React, { ReactElement, ReactNode } from 'react'
 import Text from '../components/text/'
 import Delay from '../components/delay'
 let baseNumber = 1
@@ -38,4 +38,11 @@ export const isAnimeTextElement = (element: ReactElement) => {
 
 export const isDelayElement = (element: ReactElement) => {
   return isElement(element, Delay, 'Delay')
+}
+
+export const createCharacterReactNode = (text: string) => {
+  return text.split('').map((char) => {
+    const id = generateUniqueId(1)
+    return React.createElement(React.Fragment, { key: id }, char)
+  })
 }

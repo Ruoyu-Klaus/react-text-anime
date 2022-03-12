@@ -1,10 +1,11 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 import Caret from '../caret'
 import Text from '../text'
 import Delay from '../delay'
 import {
   delay,
   generateUniqueId,
+  createCharacterReactNode,
   isAnimeTextElement,
   isDelayElement,
   isStringOrNumber,
@@ -24,13 +25,17 @@ class TextAnime extends React.Component<TextAnimeTypes> {
   caret: React.ReactElement
   styledSpan: React.ReactElement
   typingSpeed: number
+  mediator: number
 
   constructor(props: TextAnimeTypes) {
     super(props)
     const { typingSpeed = 200, caretClassName, caretMark, caretStyle } = props
     this.typingSpeed = typingSpeed
     this.caret = (
-      <Caret className={caretClassName} {...{ style: caretStyle }}>
+      <Caret
+        className={caretClassName ? caretClassName : ''}
+        {...{ style: caretStyle }}
+      >
         {caretMark}
       </Caret>
     )
@@ -40,15 +45,17 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     this.startTyping()
   }
 
+  private createCaretReactNode = (): React.ReactNode => {
+    return React.createElement(
+      React.Fragment,
+      { key: generateUniqueId(0) },
+      this.caret
+    )
+  }
+
   private hijackChildren = (children: React.ReactNode) => {
     return React.Children.map(children, (child: React.ReactNode) => {
       if (React.isValidElement(child)) {
-        const uniqueKey = generateUniqueId(0)
-        const caretNode = React.createElement(
-          React.Fragment,
-          { key: uniqueKey },
-          this.caret
-        )
         if (isAnimeTextElement(child)) {
           const props = child.props
           const clonedElement = React.Children.map(
@@ -61,7 +68,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
             id: child.props.time,
             className: `text-anime-character delayed`,
             style: { visibility: 'hidden' },
-            children: [caretNode]
+            children: [this.createCaretReactNode()]
           })
         } else {
           const clonedElement = React.Children.map(
@@ -73,9 +80,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
           return React.createElement(
             child.type,
             {
-              ...omit(child.props, ['children']),
-              id: uniqueKey,
-              key: uniqueKey
+              ...omit(child.props, ['children'])
             },
             [...clonedElement]
           )
@@ -88,30 +93,25 @@ class TextAnime extends React.Component<TextAnimeTypes> {
   private recurseInterceptTextNode = (
     props: { backspace: boolean },
     recursionFunc: Function,
-    element: ReactNode
+    element: React.ReactNode
   ) => {
     if (isStringOrNumber(element)) {
-      return this.textSeparator(element.toString()).map(
+      return createCharacterReactNode(element.toString()).map(
         (characterNode, index, array) => {
           const isLastCharacter = index === array.length - 1
           const id = generateUniqueId(0)
-          const caretNode = React.createElement(
-            React.Fragment,
-            { key: generateUniqueId(0) },
-            this.caret
-          )
           return React.createElement('span', {
             key: id,
             id: id,
             className: `text-anime-character ${
-              props.backspace && 'backspace'
+              props.backspace ? 'backspace' : ''
             } ${props.backspace && isLastCharacter ? 'backspace-last' : ''}`,
             style: {
               whiteSpace: 'pre-wrap',
               visibility: 'hidden'
             },
             index: index,
-            children: [characterNode, caretNode]
+            children: [characterNode, this.createCaretReactNode()]
           })
         }
       )
@@ -132,20 +132,24 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     for (let index = 0; index < allCharacters.length; index++) {
       await delay(this.typingSpeed)
       const character = allCharacters[index]
+
       const shouldDelay = character.classList.contains('delayed')
-      const isLastBackspaceCharacter =
-        character.classList.contains('backspace-last')
 
       if (shouldDelay) {
         await delay(Number(character.getAttribute('id')))
+        if (this.mediator) {
+          toggleCaretByIndex(this.mediator, false)
+          this.mediator = null
+        }
       }
       character.style.visibility = 'visible'
-
       const previousIndex = index - 1
       if (previousIndex >= 0) {
         toggleCaretByIndex(previousIndex, false)
       }
 
+      const isLastBackspaceCharacter =
+        character.classList.contains('backspace-last')
       if (isLastBackspaceCharacter) {
         const numberForBackspace = Number(character.getAttribute('index'))
         for (let stepIndex = 0; stepIndex <= numberForBackspace; stepIndex++) {
@@ -156,18 +160,12 @@ class TextAnime extends React.Component<TextAnimeTypes> {
 
           const previousIndex = currentIndex - 1
           if (previousIndex >= 0) {
-            toggleCaretByIndex(previousIndex, false)
+            toggleCaretByIndex(previousIndex, true)
+            this.mediator = previousIndex
           }
         }
       }
     }
-  }
-
-  private textSeparator = (text: string) => {
-    return text.split('').map((char) => {
-      const id = generateUniqueId(1)
-      return React.createElement(React.Fragment, { key: id }, char)
-    })
   }
 
   render() {
