@@ -1,6 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react'
 import Text from '../components/text/'
-import Delay from '../components/delay'
+import Delay from '../components/wait'
 let baseNumber = 1
 
 export const omit = (obj, keys) => {

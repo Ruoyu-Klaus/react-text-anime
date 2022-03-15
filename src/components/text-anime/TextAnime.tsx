@@ -1,7 +1,7 @@
 import React from 'react'
 import Caret from '../caret'
 import Text from '../text'
-import Delay from '../delay'
+import Wait from '../wait'
 import {
   delay,
   generateUniqueId,
@@ -21,7 +21,7 @@ type TextAnimeTypes = {
 }
 class TextAnime extends React.Component<TextAnimeTypes> {
   static Text: typeof Text
-  static Delay: typeof Delay
+  static Wait: typeof Wait
   caret: React.ReactElement
   styledSpan: React.ReactElement
   typingSpeed: number
@@ -178,6 +178,6 @@ class TextAnime extends React.Component<TextAnimeTypes> {
   }
 }
 TextAnime.Text = Text
-TextAnime.Delay = Delay
+TextAnime.Wait = Wait
 
 export default TextAnime

@@ -4,7 +4,7 @@ type DelayType = {
   time: number
 }
 
-export default class Delay extends PureComponent<DelayType> {
+export default class Wait extends PureComponent<DelayType> {
   constructor(props: DelayType | Readonly<DelayType>) {
     super(props)
   }
