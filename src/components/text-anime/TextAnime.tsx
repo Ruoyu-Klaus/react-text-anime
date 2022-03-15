@@ -41,7 +41,7 @@ class TextAnime extends React.Component<TextAnimeTypes> {
     )
   }
 
-  componentDidMount(): void {
+  componentDidMount() {
     this.startTyping()
   }
 

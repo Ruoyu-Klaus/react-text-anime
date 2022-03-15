@@ -3,9 +3,10 @@ import Text from '../components/text/'
 import Delay from '../components/wait'
 let baseNumber = 1
 
-export const omit = (obj, keys) => {
-  const { [keys]: _, ...newObj } = obj
-  return newObj
+export const omit = (obj: {}, keys: string[]) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !keys.includes(key))
+  )
 }
 
 export const generateUniqueId = (h: number) => {
