@@ -1,6 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react'
 import Text from '../components/text/'
-import Delay from '../components/wait'
 let baseNumber = 1
 
 export const omit = (obj: {}, keys: string[]) => {
@@ -35,10 +34,6 @@ export const isElement = (
 
 export const isAnimeTextElement = (element: ReactElement) => {
   return isElement(element, Text, 'Text')
-}
-
-export const isDelayElement = (element: ReactElement) => {
-  return isElement(element, Delay, 'Delay')
 }
 
 export const createCharacterReactNode = (text: string) => {

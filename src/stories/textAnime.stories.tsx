@@ -14,73 +14,16 @@ const textList = [
 
 export const CustomCaret = () => {
   return (
-    <>
-      <TextAnime
-        typingSpeed={100}
-        caretMark={' '}
-        caretStyle={{
-          color: 'red',
-          borderLeft: '1px solid red',
-          animationDuration: '1s'
-        }}
-      >
-        <TextAnime.Text as='h2' style={{ color: 'red' }}>
-          Hello world
-        </TextAnime.Text>
-      </TextAnime>
-      <TextAnime
-        typingSpeed={100}
-        caretMark={'❓'}
-        caretStyle={{
-          color: 'red'
-        }}
-      >
-        <TextAnime.Text as='h3' style={{ color: 'black' }}>
-          Hello world
-        </TextAnime.Text>
-      </TextAnime>
-    </>
-  )
-}
-
-export const TextAnimeExample = () => {
-  return (
-    <>
-      <TextAnime typingSpeed={100}>
-        <TextAnime.Text>
-          <TextAnime.Wait time={2000} />
-          Delay one second passed
-        </TextAnime.Text>
-        <TextAnime.Text>
-          I <TextAnime.Wait time={1000} />
-          can typify all text node under the TextAnime.Text
-        </TextAnime.Text>
-        <ul>
-          {textList.map((text) => (
-            <TextAnime.Text as='li' key={text}>
-              <TextAnime.Wait time={1000} />
-              {text}
-            </TextAnime.Text>
-          ))}
-        </ul>
-      </TextAnime>
-    </>
-  )
-}
-
-export const BackspaceExample = () => {
-  return (
-    <>
-      <TextAnime typingSpeed={200}>
-        <TextAnime.Text as='h1'>
-          I am a{' '}
-          <TextAnime.Text as={'h1'} backspace={true}>
-            one
-            <TextAnime.Wait time={2000} />
-          </TextAnime.Text>
-          <TextAnime.Text as={'span'}>node</TextAnime.Text>
-        </TextAnime.Text>
-      </TextAnime>
-    </>
+    <TextAnime
+      typingSpeed={300}
+      caretMark={'❓'}
+      caretStyle={{
+        color: 'red',
+        animationDuration: '1s'
+      }}
+      style={{ color: 'red' }}
+    >
+      Hello world
+    </TextAnime>
   )
 }

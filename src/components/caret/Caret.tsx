@@ -20,7 +20,6 @@ const StyledCaret = styled.span`
   display: inline-block;
   height: auto;
   position: relative;
-  margin-left: 5px;
   ${(props) => ({ ...props.style })}
 `
 
