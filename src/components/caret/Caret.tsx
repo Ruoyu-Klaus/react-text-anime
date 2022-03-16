@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import styled, { keyframes } from 'styled-components'
 
-type CaretTypes = {
+export type CaretTypes = {
   className?: string
   children?: React.ReactNode
   style?: React.CSSProperties
@@ -23,7 +23,7 @@ const StyledCaret = styled.span`
   ${(props) => ({ ...props.style })}
 `
 
-export default class Caret extends PureComponent<CaretTypes> {
+export class Caret extends PureComponent<CaretTypes> {
   constructor(props: CaretTypes | Readonly<CaretTypes>) {
     super(props)
   }

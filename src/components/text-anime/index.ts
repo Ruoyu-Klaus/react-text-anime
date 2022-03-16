@@ -1,3 +1,1 @@
-import TextAnime from './TextAnime'
-
-export default TextAnime
+export * from './TextAnime'
