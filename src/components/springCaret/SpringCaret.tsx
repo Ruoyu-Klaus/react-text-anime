@@ -3,7 +3,7 @@ import { animated, useSpring, SpringConfig } from '@react-spring/web'
 
 export type SpringCaretType = {
   index: number
-  typingSpeed: number
+  interval: number
   shouldHide: boolean
   children: React.ReactNode
   springConfig: SpringConfig
@@ -13,12 +13,12 @@ export type SpringCaretType = {
 export const SpringCaret = ({
   index,
   shouldHide,
-  typingSpeed,
+  interval,
   springConfig,
   children,
   className
 }: SpringCaretType) => {
-  const delay = typingSpeed * (index + 2)
+  const delay = interval * (index + 2)
   const styles = useSpring({
     from: { opacity: 1, display: 'inline-block' },
     to: { opacity: shouldHide ? 0 : 1, display: shouldHide && 'none' },

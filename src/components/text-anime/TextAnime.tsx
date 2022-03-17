@@ -14,9 +14,9 @@ export type CaretConfig = {
 
 export type TextAnimeTypes = {
   as?: React.ElementType
-  typingSpeed?: number
+  interval?: number
   style?: React.CSSProperties
-  children: string
+  children?: string
   caretConfig?: CaretConfig
   springConfig?: SpringConfig
 }
@@ -24,7 +24,7 @@ export type TextAnimeTypes = {
 export class TextAnime extends React.Component<TextAnimeTypes> {
   private TextElement: React.ElementType
   caret: React.ReactElement
-  typingSpeed: number
+  interval: number
   enableCaret: boolean
   springConfig: SpringConfig
   myRef: React.RefObject<HTMLDivElement>
@@ -33,12 +33,12 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
     super(props)
     const {
       as = 'div',
-      typingSpeed = 200,
+      interval = 200,
       caretConfig = { enabled: true },
       springConfig = {}
     } = props
     this.TextElement = as
-    this.typingSpeed = typingSpeed
+    this.interval = interval
     this.springConfig = springConfig
     this.myRef = React.createRef()
 
@@ -72,7 +72,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
           className='text-anime-character'
           key={id}
           index={index}
-          typingSpeed={this.typingSpeed}
+          interval={this.interval}
           springConfig={this.springConfig}
         >
           {characterNode}
@@ -81,7 +81,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
               key={id}
               index={index}
               shouldHide={lastChildIndex !== index}
-              typingSpeed={this.typingSpeed}
+              interval={this.interval}
               springConfig={this.springConfig}
             >
               {this.caret}
@@ -102,7 +102,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
         ref={this.myRef}
         style={style}
       >
-        {this.hijackChildren(children)}
+        {children && this.hijackChildren(children)}
       </TextElement>
     )
   }

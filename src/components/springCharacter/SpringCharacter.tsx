@@ -3,7 +3,7 @@ import { animated, useSpring, SpringConfig } from '@react-spring/web'
 
 export type SpringCharacterType = {
   index: number
-  typingSpeed: number
+  interval: number
   children: React.ReactNode
   springConfig: SpringConfig
   className: string
@@ -11,11 +11,11 @@ export type SpringCharacterType = {
 
 export const SpringCharacter = ({
   index,
-  typingSpeed,
+  interval,
   springConfig,
   children
 }: SpringCharacterType) => {
-  const delay = typingSpeed * (index + 1)
+  const delay = interval * (index + 1)
   const styles = useSpring({
     from: { opacity: 0 },
     to: { opacity: 1 },

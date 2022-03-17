@@ -27,7 +27,16 @@ export const CustomCaret = Template.bind(
   {},
   {
     as: 'h1',
-    typingSpeed: 300,
+    interval: 300,
     caretConfig: caretConfig
+  }
+)
+
+export const DisableCaret = Template.bind(
+  {},
+  {
+    as: 'h1',
+    interval: 100,
+    caretConfig: { enabled: false }
   }
 )
