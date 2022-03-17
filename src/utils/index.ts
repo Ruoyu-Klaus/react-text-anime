@@ -1,5 +1,4 @@
 import React, { ReactElement, ReactNode } from 'react'
-import Text from '../components/text/'
 let baseNumber = 1
 
 export const omit = (obj: {}, keys: string[]) => {
@@ -30,10 +29,6 @@ export const isElement = (
     return false
   }
   return elementType === targetElement || elementType === targetElementName
-}
-
-export const isAnimeTextElement = (element: ReactElement) => {
-  return isElement(element, Text, 'Text')
 }
 
 export const createCharacterReactNode = (text: string) => {

@@ -1,26 +1,32 @@
-import { animated, Spring, SpringConfig } from '@react-spring/web'
+import { SpringConfig } from '@react-spring/web'
 import React from 'react'
 import { createCharacterReactNode, generateUniqueId } from '../../utils'
 import { Caret } from '../caret'
+import { SpringCaret } from '../springCaret'
+import { SpringCharacter } from '../springCharacter'
+
+export type CaretConfig = {
+  enabled?: boolean
+  caretMark?: React.ReactNode
+  caretStyle?: React.CSSProperties
+  caretClassName?: string
+}
 
 export type TextAnimeTypes = {
   as?: React.ElementType
   typingSpeed?: number
   style?: React.CSSProperties
-  children?: string
-  caretClassName?: string
-  caretMark?: React.ReactNode
-  caretStyle?: React.CSSProperties
+  children: string
+  caretConfig?: CaretConfig
   springConfig?: SpringConfig
 }
 
 export class TextAnime extends React.Component<TextAnimeTypes> {
   private TextElement: React.ElementType
   caret: React.ReactElement
-  styledSpan: React.ReactElement
   typingSpeed: number
+  enableCaret: boolean
   springConfig: SpringConfig
-  steps: number
   myRef: React.RefObject<HTMLDivElement>
 
   constructor(props: TextAnimeTypes) {
@@ -28,15 +34,22 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
     const {
       as = 'div',
       typingSpeed = 200,
-      caretClassName,
-      caretMark,
-      caretStyle,
+      caretConfig = { enabled: true },
       springConfig = {}
     } = props
     this.TextElement = as
     this.typingSpeed = typingSpeed
     this.springConfig = springConfig
     this.myRef = React.createRef()
+
+    const {
+      caretMark,
+      caretStyle,
+      caretClassName,
+      enabled = true
+    } = caretConfig
+    this.enableCaret = enabled
+
     this.caret = (
       <Caret
         className={caretClassName ? caretClassName : ''}
@@ -53,54 +66,41 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
     return createCharacterReactNode(children).map((characterNode, index) => {
       const id = generateUniqueId(0)
       const lastChildIndex = children.length - 1
+
       return (
-        <Spring
-          from={{ opacity: 0 }}
-          to={{ opacity: 1 }}
-          delay={this.typingSpeed * (index + 1)}
-          config={{ ...this.springConfig }}
+        <SpringCharacter
+          className='text-anime-character'
+          key={id}
+          index={index}
+          typingSpeed={this.typingSpeed}
+          springConfig={this.springConfig}
         >
-          {(styles) => (
-            <animated.span
-              style={{ ...styles, position: 'relative' }}
+          {characterNode}
+          {this.enableCaret ? (
+            <SpringCaret
               key={id}
-              className='text-anime-character'
+              index={index}
+              shouldHide={lastChildIndex !== index}
+              typingSpeed={this.typingSpeed}
+              springConfig={this.springConfig}
             >
-              {characterNode}
-              <Spring
-                from={{ opacity: 1, display: 'inline-block' }}
-                to={{
-                  opacity: lastChildIndex !== index ? 0 : 1,
-                  display: lastChildIndex !== index && 'none'
-                }}
-                delay={this.typingSpeed * (index + 2)}
-                config={{ ...this.springConfig }}
-              >
-                {(styles) => (
-                  <animated.span
-                    style={{ ...styles, position: 'absolute' }}
-                    key={id}
-                    className='text-anime-caret'
-                  >
-                    {this.caret}
-                  </animated.span>
-                )}
-              </Spring>
-            </animated.span>
-          )}
-        </Spring>
+              {this.caret}
+            </SpringCaret>
+          ) : null}
+        </SpringCharacter>
       )
     })
   }
 
   render() {
-    const { children } = this.props
+    const { children, style } = this.props
     const TextElement = this.TextElement
     return (
       <TextElement
         className='TextAnime'
         aria-label='TextAnime'
         ref={this.myRef}
+        style={style}
       >
         {this.hijackChildren(children)}
       </TextElement>
