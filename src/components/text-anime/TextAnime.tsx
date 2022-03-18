@@ -4,6 +4,7 @@ import { createCharacterReactNode, generateUniqueId } from '../../utils'
 import { Caret } from '../caret'
 import { SpringCaret } from '../springCaret'
 import { SpringCharacter } from '../springCharacter'
+import { presets, presetsType } from './presets'
 
 export type CaretConfig = {
   enabled?: boolean
@@ -17,6 +18,7 @@ export type TextAnimeTypes = {
   interval?: number
   style?: React.CSSProperties
   children?: string
+  mode?: string
   caretConfig?: CaretConfig
   springConfig?: SpringConfig
 }
@@ -28,6 +30,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
   enableCaret: boolean
   springConfig: SpringConfig
   myRef: React.RefObject<HTMLDivElement>
+  presets: presetsType
 
   constructor(props: TextAnimeTypes) {
     super(props)
@@ -41,6 +44,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
     this.interval = interval
     this.springConfig = springConfig
     this.myRef = React.createRef()
+    this.presets = presets
 
     const {
       caretMark,
@@ -63,10 +67,10 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
   componentDidMount() {}
 
   private hijackChildren = (children: string) => {
+    const mode = this.props?.mode || 'typing'
     return createCharacterReactNode(children).map((characterNode, index) => {
       const id = generateUniqueId(0)
       const lastChildIndex = children.length - 1
-
       return (
         <SpringCharacter
           className='text-anime-character'
@@ -74,9 +78,11 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
           index={index}
           interval={this.interval}
           springConfig={this.springConfig}
+          presets={presets}
+          mode={mode}
         >
           {characterNode}
-          {this.enableCaret ? (
+          {this.enableCaret && mode === 'typing' ? (
             <SpringCaret
               key={id}
               index={index}

@@ -1,5 +1,6 @@
 import React from 'react'
 import { animated, useSpring, SpringConfig } from '@react-spring/web'
+import { presetsType } from '../text-anime/presets'
 
 export type SpringCharacterType = {
   index: number
@@ -7,19 +8,27 @@ export type SpringCharacterType = {
   children: React.ReactNode
   springConfig: SpringConfig
   className: string
+  presets: presetsType
+  mode: string
 }
 
 export const SpringCharacter = ({
   index,
   interval,
   springConfig,
-  children
+  children,
+  presets,
+  mode = 'typing'
 }: SpringCharacterType) => {
-  const delay = interval * (index + 1)
+  const modeConfig = presets[mode]?.call(
+    {},
+    { interval, index, children, springConfig }
+  )
+  if (!modeConfig)
+    console.warn(`mode: ${mode} does not exist, please provide valid mode`)
+
   const styles = useSpring({
-    from: { opacity: 0 },
-    to: { opacity: 1 },
-    delay: delay,
+    ...modeConfig,
     config: { ...springConfig }
   })
 
