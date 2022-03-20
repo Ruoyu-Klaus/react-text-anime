@@ -1,16 +1,17 @@
-import { ReactElement, ReactNode } from 'react'
-import Text from '../components/text/'
-import Delay from '../components/delay'
-import Backspace from '../components/backspace'
-let baseNumber = 1
+import React, { ReactElement, ReactNode } from 'react'
 
-export const omit = (obj, keys) => {
-  const { [keys]: _, ...newObj } = obj
-  return newObj
+export const omit = (obj: {}, keys: string[]) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !keys.includes(key))
+  )
 }
 
-export const generateUniqueId = (h) => {
-  return baseNumber++ + new Date().getTime() + h
+export const generateUniqueId = () => {
+  return (
+    new Date().getTime() +
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2.15)
+  )
 }
 
 export const delay = async (timeout: number) => {
@@ -33,14 +34,9 @@ export const isElement = (
   return elementType === targetElement || elementType === targetElementName
 }
 
-export const isAnimeTextElement = (element: ReactElement) => {
-  return isElement(element, Text, 'Text')
-}
-
-export const isDelayElement = (element: ReactElement) => {
-  return isElement(element, Delay, 'Delay')
-}
-
-export const isBackspaceElement = (element: ReactElement) => {
-  return isElement(element, Backspace, 'Backspace')
+export const createCharacterReactNode = (text: string) => {
+  return text.split('').map((char) => {
+    const id = generateUniqueId()
+    return React.createElement(React.Fragment, { key: id }, char)
+  })
 }

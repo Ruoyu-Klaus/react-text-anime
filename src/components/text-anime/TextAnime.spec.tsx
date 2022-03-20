@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import React from 'react'
-import TextAnime from './TextAnime'
+import { TextAnime } from './TextAnime'
 
 describe('TextAnime Component', () => {
   it('should have TextAnime className with default props', () => {
