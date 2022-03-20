@@ -24,3 +24,23 @@ export const FadeIn = Template.bind(
     mode: 'fadeIn'
   }
 )
+
+export const CustomFadeIn = Template.bind(
+  {},
+  {
+    as: 'h1',
+    springConfig: { duration: 3000 },
+    mode: 'fadeIn',
+    animations: [
+      {
+        fadeIn: ({ interval, index, children, springConfig }) => {
+          return {
+            from: { opacity: 0 },
+            to: { opacity: 1 },
+            delay: index % 2 === 0 ? 0 : interval * 2
+          }
+        }
+      }
+    ]
+  }
+)

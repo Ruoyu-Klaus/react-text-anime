@@ -26,7 +26,6 @@ export type TextAnimeTypes = {
 
 export class TextAnime extends React.Component<TextAnimeTypes> {
   private TextElement: React.ElementType
-  caret: React.ReactElement
   interval: number
   enableCaret: boolean
   springConfig: SpringConfig
@@ -38,7 +37,6 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
     const {
       as = 'div',
       interval = 200,
-      caretConfig = { enabled: true },
       springConfig = {},
       animations = []
     } = props
@@ -47,31 +45,16 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
     this.springConfig = springConfig
     this.myRef = React.createRef()
     this.textAnimation = new TextAnimation(animations)
-
-    const {
-      caretMark,
-      caretStyle,
-      caretClassName,
-      enabled = true
-    } = caretConfig
-    this.enableCaret = enabled
-
-    this.caret = (
-      <Caret
-        className={caretClassName ? caretClassName : ''}
-        {...{ style: caretStyle }}
-      >
-        {caretMark}
-      </Caret>
-    )
   }
 
   componentDidMount() {}
 
   private hijackChildren = (children: string) => {
-    const mode = this.props?.mode || 'typing'
+    // const mode = this.props?.mode || 'typing'
+    const { mode = 'typing', caretConfig = {} } = this.props
+    const { enabled: enableCaret = true } = caretConfig
     return createCharacterReactNode(children).map((characterNode, index) => {
-      const id = generateUniqueId(0)
+      const id = generateUniqueId()
       const lastChildIndex = children.length - 1
       return (
         <SpringCharacter
@@ -84,7 +67,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
           mode={mode}
         >
           {characterNode}
-          {this.enableCaret && mode === 'typing' ? (
+          {enableCaret && mode === 'typing' ? (
             <SpringCaret
               key={id}
               index={index}
@@ -92,12 +75,24 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
               interval={this.interval}
               springConfig={this.springConfig}
             >
-              {this.caret}
+              {this.renderCaret()}
             </SpringCaret>
           ) : null}
         </SpringCharacter>
       )
     })
+  }
+  private renderCaret = () => {
+    const { caretConfig = {} } = this.props
+    const { caretMark, caretStyle, caretClassName } = caretConfig
+    return (
+      <Caret
+        className={caretClassName ? caretClassName : ''}
+        {...{ style: caretStyle }}
+      >
+        {caretMark}
+      </Caret>
+    )
   }
 
   render() {

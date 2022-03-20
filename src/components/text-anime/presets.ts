@@ -23,8 +23,7 @@ export class TextAnimation {
     fadeIn: ({ interval, index, children, springConfig }) => {
       return {
         from: { opacity: 0 },
-        to: { opacity: 1 },
-        delay: index % 2 === 0 ? 0 : interval * 2
+        to: { opacity: 1 }
       }
     },
     dropIn: ({ interval, index, children, springConfig }) => {

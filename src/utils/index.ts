@@ -1,5 +1,4 @@
 import React, { ReactElement, ReactNode } from 'react'
-let baseNumber = 1
 
 export const omit = (obj: {}, keys: string[]) => {
   return Object.fromEntries(
@@ -7,8 +6,12 @@ export const omit = (obj: {}, keys: string[]) => {
   )
 }
 
-export const generateUniqueId = (h: number) => {
-  return baseNumber++ + new Date().getTime() + h
+export const generateUniqueId = () => {
+  return (
+    new Date().getTime() +
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2.15)
+  )
 }
 
 export const delay = async (timeout: number) => {
@@ -33,7 +36,7 @@ export const isElement = (
 
 export const createCharacterReactNode = (text: string) => {
   return text.split('').map((char) => {
-    const id = generateUniqueId(1)
+    const id = generateUniqueId()
     return React.createElement(React.Fragment, { key: id }, char)
   })
 }

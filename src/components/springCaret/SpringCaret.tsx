@@ -7,7 +7,6 @@ export type SpringCaretType = {
   shouldHide: boolean
   children: React.ReactNode
   springConfig: SpringConfig
-  className?: string
 }
 
 export const SpringCaret = ({
@@ -15,8 +14,7 @@ export const SpringCaret = ({
   shouldHide,
   interval,
   springConfig,
-  children,
-  className
+  children
 }: SpringCaretType) => {
   const delay = interval * (index + 2)
   const styles = useSpring({
@@ -28,7 +26,7 @@ export const SpringCaret = ({
   return (
     <animated.span
       style={{ ...styles, position: 'absolute' }}
-      className={`text-anime-caret ${className}`}
+      className='text-anime-caret'
     >
       {children}
     </animated.span>
