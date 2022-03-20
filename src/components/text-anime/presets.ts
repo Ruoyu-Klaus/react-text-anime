@@ -8,33 +8,37 @@ export type presetArgumentType = {
 }
 
 export type presetsType = {
-  [key: string]: ({
-    interval,
-    index,
-    children,
-    springConfig
-  }: presetArgumentType) => UseSpringProps
+  [key: string]: (presetArgument: presetArgumentType) => UseSpringProps
 }
 
-export const presets: presetsType = {
-  typing: ({ interval, index }) => {
-    return {
-      from: { opacity: 0 },
-      to: { opacity: 1 },
-      delay: interval * (index + 1)
+export class TextAnimation {
+  presets: presetsType = {
+    typing: ({ interval, index }) => {
+      return {
+        from: { opacity: 0 },
+        to: { opacity: 1 },
+        delay: interval * (index + 1)
+      }
+    },
+    fadeIn: ({ interval, index, children, springConfig }) => {
+      return {
+        from: { opacity: 0 },
+        to: { opacity: 1 },
+        delay: index % 2 === 0 ? 0 : interval * 2
+      }
+    },
+    dropIn: ({ interval, index, children, springConfig }) => {
+      return {
+        from: { position: 'relative', top: -40 },
+        to: { position: 'relative', top: 0 },
+        position: 'relative'
+      }
     }
-  },
-  fadeIn: ({ interval, index, children, springConfig }) => {
-    return {
-      from: { opacity: 0 },
-      to: { opacity: 1 }
-    }
-  },
-  dropIn: ({ interval, index, children, springConfig }) => {
-    return {
-      from: { position: 'relative', top: -40 },
-      to: { position: 'relative', top: 0 },
-      position: 'relative'
-    }
+  }
+
+  constructor(animations?: presetsType[]) {
+    animations.forEach((animation) => {
+      this.presets = { ...this.presets, ...animation }
+    })
   }
 }

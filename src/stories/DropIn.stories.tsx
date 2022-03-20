@@ -20,7 +20,28 @@ export const DropIn = Template.bind(
   {},
   {
     as: 'h1',
-    springConfig: { duration: 3000 },
+    springConfig: { duration: 2000 },
     mode: 'dropIn'
+  }
+)
+
+export const customDropIn = Template.bind(
+  {},
+  {
+    as: 'h1',
+    springConfig: { duration: 2000 },
+    mode: 'dropIn',
+    animations: [
+      {
+        dropIn: ({ interval, index, children, springConfig }) => {
+          return {
+            from: { position: 'relative', top: -40 },
+            to: { position: 'relative', top: 0 },
+            position: 'relative',
+            delay: index % 2 === 0 ? 0 : interval * 5
+          }
+        }
+      }
+    ]
   }
 )

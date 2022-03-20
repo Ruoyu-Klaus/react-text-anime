@@ -4,7 +4,7 @@ import { createCharacterReactNode, generateUniqueId } from '../../utils'
 import { Caret } from '../caret'
 import { SpringCaret } from '../springCaret'
 import { SpringCharacter } from '../springCharacter'
-import { presets, presetsType } from './presets'
+import { presetsType, TextAnimation } from './presets'
 
 export type CaretConfig = {
   enabled?: boolean
@@ -19,6 +19,7 @@ export type TextAnimeTypes = {
   style?: React.CSSProperties
   children?: string
   mode?: string
+  animations?: presetsType[]
   caretConfig?: CaretConfig
   springConfig?: SpringConfig
 }
@@ -30,7 +31,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
   enableCaret: boolean
   springConfig: SpringConfig
   myRef: React.RefObject<HTMLDivElement>
-  presets: presetsType
+  textAnimation: TextAnimation
 
   constructor(props: TextAnimeTypes) {
     super(props)
@@ -38,13 +39,14 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
       as = 'div',
       interval = 200,
       caretConfig = { enabled: true },
-      springConfig = {}
+      springConfig = {},
+      animations = []
     } = props
     this.TextElement = as
     this.interval = interval
     this.springConfig = springConfig
     this.myRef = React.createRef()
-    this.presets = presets
+    this.textAnimation = new TextAnimation(animations)
 
     const {
       caretMark,
@@ -78,7 +80,7 @@ export class TextAnime extends React.Component<TextAnimeTypes> {
           index={index}
           interval={this.interval}
           springConfig={this.springConfig}
-          presets={presets}
+          textAnimation={this.textAnimation}
           mode={mode}
         >
           {characterNode}
